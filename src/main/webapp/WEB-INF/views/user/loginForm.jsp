@@ -9,7 +9,7 @@
 	    <input type="text" name="username" class="form-control" placeholder="Enter username"  required="required">
 	  </div>
 	  <div class="form-group">
-	    <input type="password" name="password" class="form-control" placeholder="Enter password"  required="required">
+	    <input type="password" name="password" class="form-control" placeholder="Enter password"  >
 	  </div>
 	  <button type="submit" class="btn btn-primary">로그인</button>
 	</form>

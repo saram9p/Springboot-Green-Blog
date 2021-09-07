@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h1>잘못된 접근입니다</h1>
+에러 터졌어요!!!
+${errorMap}
 </body>
 </html>
