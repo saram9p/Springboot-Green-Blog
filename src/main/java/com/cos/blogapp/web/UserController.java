@@ -53,7 +53,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public @ResponseBody String login(@Valid LoginReqDto dto, BindingResult bindingResult, Model model ) {
+	public @ResponseBody String login(@Valid LoginReqDto dto, BindingResult bindingResult) {
 		
 		// 1. 유효성 검사 실패 - 자바스크립트 응답(경고창, 뒤로가기)
 		// 2. 정상 - 로그인 페이지
@@ -67,7 +67,6 @@ public class UserController {
 				System.out.println("필드: " + error.getField());
 				System.out.println("메시지: " + error.getDefaultMessage());
 			}
-			model.addAttribute("errorMap", errorMap);
 			return Script.back(errorMap.toString());
 		}
 		
@@ -90,7 +89,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/join")
-	public @ResponseBody String join(@Valid JoinReqDto dto, BindingResult bindingResult, Model model) { // username=love&password=1234&email=love@nate.com
+	public @ResponseBody String join(@Valid JoinReqDto dto, BindingResult bindingResult) { // username=love&password=1234&email=love@nate.com
 		// if if if 으로 막는 것은 노가다
 		// @Vaild 가 체크해서  bindingResult 에 담음
 		System.out.println("에러사이즈: " + bindingResult.getFieldErrors().size());
@@ -102,7 +101,6 @@ public class UserController {
 				System.out.println("필드: " + error.getField());
 				System.out.println("메시지: " + error.getDefaultMessage());
 			}
-			model.addAttribute("errorMap", errorMap);
 			return Script.back(errorMap.toString());
 		}
 		
