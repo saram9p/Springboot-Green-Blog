@@ -31,13 +31,6 @@ public class UserController {
 	private final UserRepository userRepository;
 	private final HttpSession session;
 	
-	
-	
-	@GetMapping({"/", "/home"})
-	public String home() {
-		return "home";
-	}
-	
 	// /WEB-INF/views/user/login.jsp
 	// /WEB-INF/views/login.jsp
 	

@@ -1,10 +1,12 @@
 package com.cos.blogapp.domain.board;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import com.cos.blogapp.domain.user.User;
@@ -22,9 +24,10 @@ public class Board {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id; //PK (자동증가 번호)
 	private String title; // 아이디
+	@Lob
 	private String content;
 	
 	@JoinColumn(name = "userId") // 이름을 정해줌
-	@ManyToOne
-	private User user;
+	@ManyToOne(fetch = FetchType.EAGER) // LAZY : 지연로딩, EAGER : 기본전략, 한 건이면 씀 
+	private User user; // 오브젝트 변환, Vo가 필요없다
 }
