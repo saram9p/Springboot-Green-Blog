@@ -3,7 +3,7 @@ package com.cos.blogapp.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class SHA256 {
+public class SHA {
 
 	public static String encrypt(String rawPassword, MyAlgorithm algorithm) {
 		// 함수 전체에 예외 처리를 하려면 throw 한다

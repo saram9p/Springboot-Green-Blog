@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
 
-public class SHA256Test {
+public class SHATest {
 	// 단위테스트의 장점 : 시간 단축
 	// 똑같은 패키지와 클래스를 만들어서 @Test를 붙여서 테스트한다
 	// JUnit은 main을 쓸수 없다
