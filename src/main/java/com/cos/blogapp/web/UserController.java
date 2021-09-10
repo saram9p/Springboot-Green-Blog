@@ -1,5 +1,6 @@
 package com.cos.blogapp.web;
 
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cos.blogapp.domain.user.User;
 import com.cos.blogapp.domain.user.UserRepository;
+import com.cos.blogapp.util.MyAlgorithm;
+import com.cos.blogapp.util.SHA256;
 import com.cos.blogapp.util.Script;
 import com.cos.blogapp.web.dto.JoinReqDto;
 import com.cos.blogapp.web.dto.LoginReqDto;
@@ -67,7 +70,8 @@ public class UserController {
 		System.out.println(dto.getUsername());
 		System.out.println(dto.getPassword());
 		// 2. DB -> 조회
-		User userEntity =  userRepository.mLogin(dto.getUsername(), dto.getPassword());
+		String encPassword = SHA256.encrypt(dto.getPassword(), MyAlgorithm.SHA256);
+		User userEntity =  userRepository.mLogin(dto.getUsername(), encPassword);
 		
 		
 		if(userEntity == null) { // username, password 잘못 기입
@@ -97,6 +101,9 @@ public class UserController {
 			return Script.back(errorMap.toString());
 		}
 		
+		String encpassword = SHA256.encrypt(dto.getPassword(), MyAlgorithm.SHA256);
+		
+		dto.setPassword(encpassword);
 		userRepository.save(dto.toEntity());
 		return Script.href("loginForm"); // 리다이렉션 (300)
 	}
