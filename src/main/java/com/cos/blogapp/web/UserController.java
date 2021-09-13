@@ -37,6 +37,12 @@ public class UserController {
 	// /WEB-INF/views/user/login.jsp
 	// /WEB-INF/views/login.jsp
 	
+	@GetMapping("/logout")
+	public String logout() {
+		session.invalidate(); // 세션 무효화 (sessionId에 있는 값을 비우는 것)
+		return "redirect:/"; // 
+	}
+	
 	//  /WEB-INF/views/user/login.jsp
 	@GetMapping("/loginForm")
 	public String loginForm() {
@@ -80,7 +86,7 @@ public class UserController {
 
 		}else {
 			// 세션 날라가는 조건 : 1. session.invalidate(), 2. 브라우저를 닫으면 날라감
-			session.setAttribute("principal", userEntity);
+			session.setAttribute("principal", userEntity); // 세션에 담은 이유는 인증하기 위해서
 			return Script.href("/", "로그인 성공"); // href
 		}
 	}
