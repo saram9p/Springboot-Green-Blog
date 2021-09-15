@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -34,6 +35,17 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	// DI (생성자 주입)
 	private final BoardRepository boardRepository;
 	private final HttpSession session;
+	
+	// 쿼리스트링, 패스var => 디비 where 에 걸리는 친구들!!
+	// 1.컨트롤러 선정, 2. Http Method 선정, 3. 받을 데이터가 있는지!! (body, 쿼리스트링, 패스 var)
+	// 4. 디비에 접근을 해야하면 Model 접근하기 orElse Model에 접근할 필요가 없다.
+	@GetMapping("/board/{id}") // id는 주소에 걸려있는 데이터
+	public String detail(@PathVariable int id, Model model) {
+		// select * from board where id = :id
+		Board boardEntity = boardRepository.findById(id).get(); // DB에서 들고 온 데이터는 Entity 를 붙임, 여러건을 들고 올때는 s 를 붙임
+		model.addAttribute("boardEntity", boardEntity);
+		return "board/detail";
+	}
 	
 	@PostMapping("/board")
 	public @ResponseBody String save(@Valid BoardSaveReqDto dto, BindingResult bindingResult) {
@@ -64,6 +76,7 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 		return Script.href("/", "글쓰기 성공"); 
 	}
 	
+	// /board?page=2
 	@GetMapping("/board/saveForm")
 	public String saveForm() {
 		return "board/saverForm";
