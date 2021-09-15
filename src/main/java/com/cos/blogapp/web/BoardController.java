@@ -42,7 +42,15 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	@GetMapping("/board/{id}") // id는 주소에 걸려있는 데이터
 	public String detail(@PathVariable int id, Model model) {
 		// select * from board where id = :id
-		Board boardEntity = boardRepository.findById(id).get(); // DB에서 들고 온 데이터는 Entity 를 붙임, 여러건을 들고 올때는 s 를 붙임
+		
+		// 1. orElse 는 값을 찾으면 Board가 리턴, 못찾으면 (괄호안 내용 리턴)
+//		Board boardEntity = boardRepository.findById(id) // DB에서 들고 온 데이터는 Entity 를 붙임, 여러건을 들고 올때는 s 를 붙임
+//				.orElse(new Board(100, "글없어요", "글없어요", null)); 
+		
+		// 2, orElseThrow
+		Board boardEntity = boardRepository.findById(id)
+				.orElseThrow();
+		
 		model.addAttribute("boardEntity", boardEntity);
 		return "board/detail";
 	}
