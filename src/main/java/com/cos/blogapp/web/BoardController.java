@@ -51,13 +51,7 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 		
 		// 2, orElseThrow
 		Board boardEntity = boardRepository.findById(id)
-				.orElseThrow(new Supplier<MyNotFoundException>() {
-
-					@Override
-					public MyNotFoundException get() {
-						return new MyNotFoundException(id +"를 찾을 수 없습니다");  // IllegalArgumentException 를 디스패쳐 서블릿에 던져줌, 내가 익셉션을 고정할 수 있다
-					}
-				});
+				.orElseThrow(() -> new MyNotFoundException(id +" 못찾았어요")); // 중괄호를 안 적으면 무조건 return 코드가 된다
 		
 		model.addAttribute("boardEntity", boardEntity);
 		return "board/detail";
