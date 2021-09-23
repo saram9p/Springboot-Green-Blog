@@ -42,7 +42,11 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	
 
 	// DELETE FROM board WHERE id = ?, html body가 없다
-	//@DeleteMapping("/board/{id}")
+	@DeleteMapping("/board/{id}")
+	public @ResponseBody String deleteByid(@PathVariable int id) {
+		boardRepository.deleteById(id);
+		return "ok";
+	}
 	
 	// UPDATE board SET title = ?, content = ? WHERE id =?
 	//@PutMapping("/board/{id}")

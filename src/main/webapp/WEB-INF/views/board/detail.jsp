@@ -4,9 +4,16 @@
 
 <div class="container">
       <a href="#" class="btn btn-warning">수정</a>
-      <form action="#" method="post" style="display:inline-block">
-         <button id="btn-delete" class="btn btn-danger" type="submit">삭제</button>
-      </form>
+         <button  class="btn btn-danger"  onclick="deleteById(${boardEntity.id})">삭제</button>
+
+		<script>
+			function deleteById(id) {
+				// 비동기 함수 호출 -> 비동기를 잘처리하는 방법??????
+				fetch("http://localhost:8080/board/" + id, {
+					method: "delete"
+				});
+			}
+		</script>
       
    <br /><br />
    <div>
