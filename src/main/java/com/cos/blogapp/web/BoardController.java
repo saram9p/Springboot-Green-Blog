@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cos.blogapp.domain.board.Board;
@@ -42,11 +43,59 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	private final BoardRepository boardRepository;
 	private final HttpSession session;
 	
+	@PutMapping("/board/{id}")
+	public @ResponseBody CMRespDto<String> update(@PathVariable int id, @Valid @RequestBody BoardSaveReqDto dto, BindingResult bindingResult) { // 제네릭에 ?를 넣으면 리턴 시에 타입이 결정됨, @RequestBody는 버퍼로 있는 그대로 받는다, 파싱할 수 있다.
+		// dto 바로 옆에 BindingResult가 있어야한다
+		User principal = (User) session.getAttribute("principal");
+		
+		// 인증
+		if(principal == null) {
+			throw new MyAsyncNotFoundException("인증이 되지 않았습니다.");
+		}
+		// 권한
+		Board boardEntity = boardRepository.findById(id)
+				.orElseThrow(()-> new MyAsyncNotFoundException("해당 글을 찾을 수 없습니다."));
+		if (principal.getId() != boardEntity.getUser().getId()) {
+			throw new MyAsyncNotFoundException("해당 글을 수정할 권한이 없습니다.");
+		}
+		
+		// 유효성 검사
+		if(bindingResult.hasErrors()) {
+			Map<String, String> errorMap = new HashMap<>();
+			for(FieldError error : bindingResult.getFieldErrors()) {
+				errorMap.put(error.getField(), error.getDefaultMessage());
+				System.out.println("필드: " + error.getField());
+				System.out.println("메시지: " + error.getDefaultMessage());
+			}
+			throw new MyAsyncNotFoundException(errorMap.toString());
+		}
+		
 
+		
+		Board board = dto.toEntity(principal);
+		board.setId(id); // update의 핵심, 같은 primary key 일때 업데이트가 된다
+		
+		boardRepository.save(board);
+		
+		return new CMRespDto<>(1, "업데이트 성공", null);
+	}
+	
+	@GetMapping("/board/{id}/updateForm") // 데이터를 들고 올 때는 주소가 필요하다. (board 모델의 id번글의 수정하기 화면을 주세요)
+	public String boardupdateForm(@PathVariable int id, Model model) { //서비스 만들 때 인증과 권한은 이 함수에 필요없다, 모델에 접근하지 않아서
+		// 게시글 정보를 가지고 가야함.
+		Board boardEntity = boardRepository.findById(id)
+				.orElseThrow(()-> new MyNotFoundException(id + "번호의 게시글을 찾을 수 없습니다.")); // Optional은 선택권을 준다.
+		model.addAttribute("boardEntity", boardEntity);
+		
+		return "board/updateForm";
+	}
+	
+	// API(AJAX) 요청
 	// DELETE FROM board WHERE id = ?, html body가 없다
 	@DeleteMapping("/board/{id}")
 	public @ResponseBody CMRespDto<String> deleteByid(@PathVariable int id) { // 오브젝트로 받으면 json(같은 문자열)으로 리턴한다
 
+		// AOP 처리 가능
 		// 인증이 된 사람만 함수 접근 가능!! (로그인 된 사람)
 		User principal = (User) session.getAttribute("principal");
 		if (principal == null) {
@@ -125,7 +174,7 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	// /board?page=2
 	@GetMapping("/board/saveForm")
 	public String saveForm() {
-		return "board/saverForm";
+		return "board/saveForm";
 	}
 	
 	@GetMapping({"/board"}) // /board(모델명), 페이지를 쿼리스트링으로 받는 게 좋다
