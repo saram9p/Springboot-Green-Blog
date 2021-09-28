@@ -48,7 +48,7 @@
 			alert("업데이트 성공");
 			location.href = "/board/" + id
 		} else {
-			alert("업데이트 실패");
+			alert("업데이트 실패: " + parseResponse.message);
 		}
 		
 	}

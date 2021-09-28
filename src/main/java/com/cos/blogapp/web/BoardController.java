@@ -43,6 +43,7 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	private final BoardRepository boardRepository;
 	private final HttpSession session;
 	
+	// 자바스크립트로 요청
 	@PutMapping("/board/{id}")
 	public @ResponseBody CMRespDto<String> update(@PathVariable int id, @Valid @RequestBody BoardSaveReqDto dto, BindingResult bindingResult) { // 제네릭에 ?를 넣으면 리턴 시에 타입이 결정됨, @RequestBody는 버퍼로 있는 그대로 받는다, 파싱할 수 있다.
 		// dto 바로 옆에 BindingResult가 있어야한다
@@ -53,10 +54,10 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 			throw new MyAsyncNotFoundException("인증이 되지 않았습니다.");
 		}
 		// 권한
-		Board boardEntity = boardRepository.findById(id)
+		Board boardEntity = boardRepository.findById(id) // id로 다시 셀렉트 해야 함
 				.orElseThrow(()-> new MyAsyncNotFoundException("해당 글을 찾을 수 없습니다."));
 		if (principal.getId() != boardEntity.getUser().getId()) {
-			throw new MyAsyncNotFoundException("해당 글을 수정할 권한이 없습니다.");
+			throw new MyAsyncNotFoundException("해당 게시글의 주인이 아닙니다."); // 실패는 핸들러한테 던지면 된다, 성공은 컨트롤러가 하고
 		}
 		
 		// 유효성 검사
@@ -147,7 +148,7 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 		
 		User principal = (User) session.getAttribute("principal");
 		
-		// 인증, 권한 체크 (공통로직)
+		// 인증 체크 (공통로직)
 		if(principal == null) { // 로그인 안됨
 			return Script.href("/loginForm", "잘못된 접근입니다");
 		}
