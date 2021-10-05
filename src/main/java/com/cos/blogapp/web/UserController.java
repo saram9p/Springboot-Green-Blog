@@ -1,29 +1,29 @@
 package com.cos.blogapp.web;
 
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cos.blogapp.domain.user.User;
-import com.cos.blogapp.domain.user.UserRepository;
-import com.cos.blogapp.util.MyAlgorithm;
-import com.cos.blogapp.util.SHA;
+import com.cos.blogapp.handler.ex.MyAsyncNotFoundException;
+import com.cos.blogapp.service.UserService;
 import com.cos.blogapp.util.Script;
+import com.cos.blogapp.web.dto.CMRespDto;
 import com.cos.blogapp.web.dto.JoinReqDto;
 import com.cos.blogapp.web.dto.LoginReqDto;
+import com.cos.blogapp.web.dto.UserUpdateDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,11 +32,42 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	// DI
-	private final UserRepository userRepository;
+	private final UserService userService;
 	private final HttpSession session;
 	
 	// /WEB-INF/views/user/login.jsp
 	// /WEB-INF/views/login.jsp
+	
+	// @RequestBody : json으로 받을 거라면 써야한다
+	@PutMapping("/user/{id}") // where 절에 걸린다
+	public @ResponseBody CMRespDto<String> update(@PathVariable int id, @Valid @RequestBody UserUpdateDto dto, BindingResult bindingResult) {
+		// 유효성
+		if(bindingResult.hasErrors()) {
+			Map<String, String> errorMap = new HashMap<>();
+			for(FieldError error : bindingResult.getFieldErrors()) {
+				errorMap.put(error.getField(), error.getDefaultMessage());
+				System.out.println("필드: " + error.getField());
+				System.out.println("메시지: " + error.getDefaultMessage());
+			}
+			throw new MyAsyncNotFoundException(errorMap.toString());
+		}
+		
+		// 인증
+		User principal = (User) session.getAttribute("principal");
+		if(principal == null) {
+			throw new MyAsyncNotFoundException("인증이 되지 않았습니다.");
+		}
+		
+		// 권한
+		if(principal.getId() != id) {
+			throw new MyAsyncNotFoundException("회원정보를 수정할 권한이 없습니다.");
+		}
+				
+		userService.회원정보수정(principal, dto);
+		session.setAttribute("principal", principal); // 세션 값 변경
+		
+		return new CMRespDto<>(1, "성공", null);
+	}
 	
 	@GetMapping("/user/{id}")
 	public String userInfo(@PathVariable int id) { // 주소로 값을 받음
@@ -65,15 +96,14 @@ public class UserController {
 	
 	@PostMapping("/login")
 	public @ResponseBody String login(@Valid LoginReqDto dto, BindingResult bindingResult) {
-		
 		// 1. 유효성 검사 실패 - 자바스크립트 응답(경고창, 뒤로가기)
 		// 2. 정상 - 로그인 페이지
-		
+
 		// System.out.println("에러사이즈: " + bindingResult.getFieldErrors().size());
-		
-		if(bindingResult.hasErrors()) {
+
+		if (bindingResult.hasErrors()) {
 			Map<String, String> errorMap = new HashMap<>();
-			for(FieldError error : bindingResult.getFieldErrors()) {
+			for (FieldError error : bindingResult.getFieldErrors()) {
 				errorMap.put(error.getField(), error.getDefaultMessage());
 				System.out.println("필드: " + error.getField());
 				System.out.println("메시지: " + error.getDefaultMessage());
@@ -81,23 +111,18 @@ public class UserController {
 			return Script.back(errorMap.toString());
 		}
 		
-		// 1. username, password 받기
-		System.out.println(dto.getUsername());
-		System.out.println(dto.getPassword());
-		// 2. DB -> 조회
-		String encPassword = SHA.encrypt(dto.getPassword(), MyAlgorithm.SHA256);
-		User userEntity =  userRepository.mLogin(dto.getUsername(), encPassword);
-		
+		User userEntity = userService.로그인(dto);
 		
 		if(userEntity == null) { // username, password 잘못 기입
 
-				return Script.back("아이디 혹은 비밀번호를 잘못 입력하였습니다"); // historyback
+			return Script.back("아이디 혹은 비밀번호를 잘못 입력하였습니다"); // historyback
 
-		}else {
-			// 세션 날라가는 조건 : 1. session.invalidate(), 2. 브라우저를 닫으면 날라감
-			session.setAttribute("principal", userEntity); // 세션에 담은 이유는 인증하기 위해서
-			return Script.href("/", "로그인 성공"); // href
-		}
+	}else {
+		// 세션 날라가는 조건 : 1. session.invalidate(), 2. 브라우저를 닫으면 날라감
+		session.setAttribute("principal", userEntity); // 세션에 담은 이유는 인증하기 위해서
+	}
+		
+		return Script.href("/", "로그인 성공"); // href
 	}
 	
 	@PostMapping("/join")
@@ -116,10 +141,8 @@ public class UserController {
 			return Script.back(errorMap.toString());
 		}
 		
-		String encpassword = SHA.encrypt(dto.getPassword(), MyAlgorithm.SHA256);
+		userService.회원가입(dto);
 		
-		dto.setPassword(encpassword);
-		userRepository.save(dto.toEntity());
 		return Script.href("loginForm"); // 리다이렉션 (300)
 	}
 	
