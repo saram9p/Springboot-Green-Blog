@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cos.blogapp.domain.user.User;
 import com.cos.blogapp.domain.user.UserRepository;
 import com.cos.blogapp.handler.ex.MyAsyncNotFoundException;
+import com.cos.blogapp.handler.ex.MyNotFoundException;
 import com.cos.blogapp.util.MyAlgorithm;
 import com.cos.blogapp.util.SHA;
 import com.cos.blogapp.web.dto.JoinReqDto;
@@ -26,13 +27,12 @@ public class UserService {
 	public void 회원정보수정(User principal, UserUpdateDto dto) {
 		// 핵심 로직은 왠만하면 서비스에 넣는다
 		// 핵심로직
-		principal.setEmail(dto.getEmail());
-		
-		userRepository.save(principal);
-		
-	}
+		User userEntity = userRepository.findById(principal.getId())
+				.orElseThrow(()-> new MyAsyncNotFoundException("회원정보를 찾을 수 없습니다."));
+		userEntity.setEmail(dto.getEmail());
+	} // 더티 체킹
 	
-	@Transactional
+	@Transactional(rollbackFor = MyNotFoundException.class)
 	public User 로그인(LoginReqDto dto) {
 		
 
@@ -47,7 +47,7 @@ public class UserService {
 		
 	}
 	
-	@Transactional
+	@Transactional(rollbackFor = MyNotFoundException.class)
 	public void 회원가입(JoinReqDto dto) {
 
 		String encpassword = SHA.encrypt(dto.getPassword(), MyAlgorithm.SHA256);
