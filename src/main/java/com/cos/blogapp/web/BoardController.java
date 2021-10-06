@@ -106,9 +106,10 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	// 1.컨트롤러 선정, 2. Http Method 선정, 3. 받을 데이터가 있는지!! (body, 쿼리스트링, 패스 var)
 	// 4. 디비에 접근을 해야하면 Model 접근하기 orElse Model에 접근할 필요가 없다.
 	@GetMapping("/board/{id}") // id는 주소에 걸려있는 데이터
-	public String detail(@PathVariable int id, Model model) {
+	public String detail(@PathVariable int id, Model model) { // 모델은 가방으로 생각
+		// Board 객체에 존재하는 것 (Board(O), User(O), List<Comment>(X))
 		model.addAttribute("boardEntity", boardService.게시글상세보기(id));
-		return "board/detail";
+		return "board/detail"; // ViewResolver
 	}
 	
 	@PostMapping("/board")

@@ -6,10 +6,10 @@
 <div class="container">
 	<!-- 내 글이면 (권한이 있으면) 수정과 삭제 버튼 보이게 if 사용가능 -->
 	<c:if test="${sessionScope.principal.id == boardEntity.user.id }">
-	<a href="/board/${boardEntity.id}/updateForm" class="btn btn-warning">수정</a>
-	<button class="btn btn-danger" onclick="deleteById(${boardEntity.id})">삭제</button>
+		<a href="/board/${boardEntity.id}/updateForm" class="btn btn-warning">수정</a>
+		<button class="btn btn-danger" onclick="deleteById(${boardEntity.id})">삭제</button>
 	</c:if>
-	
+
 	<script>
 			async function deleteById(id) {
 				// 1. 비동기 함수 호출 -> 비동기를 잘처리하는 방법??????
@@ -38,8 +38,7 @@
 			}
 		</script>
 
-	<br />
-	<br />
+	<br /> <br />
 	<div>
 		글 번호 : ${boardEntity.id}</span> 작성자 : <span><i>${boardEntity.user.username}
 		</i></span>
@@ -55,10 +54,11 @@
 	<hr />
 
 	<div class="card">
-	<!-- 댓글 쓰기 시작 -->
+		<!-- 댓글 쓰기 시작 -->
 		<form action="/board/${boardEntity.id }/comment" method="post">
 			<div class="card-body">
-				<textarea id="reply-content" name="content" class="form-control" rows="1"></textarea>
+				<textarea id="reply-content" name="content" class="form-control"
+					rows="1"></textarea>
 			</div>
 			<div class="card-footer">
 				<button type="submit" id="btn-reply-save" class="btn btn-primary">등록</button>
@@ -70,20 +70,23 @@
 
 	<div class="card">
 		<!-- 댓글 쓰기 시작 -->
-		<form>
 		<div class="card-header">
 			<b>댓글 리스트</b>
 		</div>
 		<ul id="reply-box" class="list-group">
-			<li id="reply-1"
-				class="list-group-item d-flex justify-content-between">
-				<div>댓글입니다</div>
-				<div class="d-flex">
-					<div class="font-italic">작성자 : 홍길동 &nbsp;</div>
-					<button class="badge">삭제</button>
-				</div>
-				</form>
-			</li>
+
+			<c:forEach var="comment" items="${boardEntity.comments }">
+				<li id="reply-${comment.id}"
+					class="list-group-item d-flex justify-content-between">
+					<div>${comment.content}</div>
+					<div class="d-flex">
+						<div class="font-italic">작성자 : ${comment.user.username } &nbsp;</div>
+						<button class="badge">삭제</button>
+					</div>
+				</li>
+			</c:forEach>
+
+
 		</ul>
 	</div>
 	<br />

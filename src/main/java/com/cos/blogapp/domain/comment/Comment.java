@@ -34,4 +34,11 @@ public class Comment {
 	@JoinColumn(name = "boardId")
 	@ManyToOne
 	private Board board;
+
+	@Override
+	public String toString() {
+		return "Comment [id=" + id + ", content=" + content + ", user=" + user + ", board=" + board + "]";
+	}
+	
+	
 }

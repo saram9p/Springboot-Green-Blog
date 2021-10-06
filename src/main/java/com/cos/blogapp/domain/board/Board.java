@@ -1,5 +1,7 @@
 package com.cos.blogapp.domain.board;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
+import com.cos.blogapp.domain.comment.Comment;
 import com.cos.blogapp.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +25,7 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Data  // getter, setter, toString
 @Entity
 public class Board {
 	@Id
@@ -32,4 +39,19 @@ public class Board {
 	@JoinColumn(name = "userId") // 이름을 정해줌
 	@ManyToOne(fetch = FetchType.EAGER) // LAZY : 지연로딩, EAGER : 기본전략, 한 건이면 씀 
 	private User user; // 오브젝트 변환, Vo가 필요없다
+	
+	// 양방향 매핑 , 기본전략 :LAZY
+	// mappedBy 에는 FK의 주인의 변수이름을 추가한다.
+	@JsonIgnoreProperties({"board"}) // comments 객체 내부의 필드를 제외시키는 법
+	// @JsonIgnore comments 자체를 제외시킨다.
+	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+	private List<Comment> comments;
+
+	@Override
+	public String toString() {
+		return "Board [id=" + id + ", title=" + title + ", content=" + content + ", user=" + user + ", comments="
+				+ comments + "]";
+	}
+	
+	
 }
