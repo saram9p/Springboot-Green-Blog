@@ -25,26 +25,6 @@ public class BoardService {
 
 	// 생성자 주입(DI)
 	private final BoardRepository boardRepository;
-	private final CommentRepository commentRepository;
-	
-	@Transactional(rollbackFor = MyNotFoundException.class)
-	public void 댓글등록(int boardId, CommentSaveReqDto dto, User principal) {
-		// 하나의 트랜잭션
-		
-		// 1. Comment 객체에 값 추가하기, id : X, content : DTO 값, user: 세션 값, board: boardId로 findById하세요(오류 검사하기 좋음, 유효성 검사하기 좋음)
-		Board boardEntity = boardRepository.findById(boardId)
-				.orElseThrow(()-> new MyNotFoundException("해당 게시글을 찾을 수 없습니다."));
-		
-		// 2. Comment 객체 만들기 (빈객체 생성)
-		Comment comment = new Comment();
-		comment.setContent(dto.getContent());
-		comment.setUser(principal);
-		comment.setBoard(boardEntity);
-		
-		// 3. save 하기
-		commentRepository.save(comment);
-		
-	}
 
 	// 1. 통으로 옮긴다
 	// 2. 필요없는 것은 컨트롤러로 뺀다

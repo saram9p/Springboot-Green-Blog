@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cos.blogapp.domain.user.User;
 import com.cos.blogapp.handler.ex.MyAsyncNotFoundException;
 import com.cos.blogapp.service.BoardService;
+import com.cos.blogapp.service.CommentService;
 import com.cos.blogapp.util.Script;
 import com.cos.blogapp.web.dto.BoardSaveReqDto;
 import com.cos.blogapp.web.dto.CMRespDto;
@@ -35,14 +36,19 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	
 	// DI (생성자 주입)
 	private final BoardService boardService;
+	private final CommentService commentService;
 	private final HttpSession session;
 	
-	@PostMapping("/board/{boardId}/comment") // 2개가 섞여 있으면 명시적으로 적는다 : id -> boardId
+	@PostMapping("/board/{boardId}/comment") // 2개가 섞여 있으면 명시적으로 적는다 : id -> boardId, 보드의 몇번의 댓글 작성, 주소때문에 어쩔 수 없이 board를 들고 옴
 	public String commentSave(@PathVariable int boardId, CommentSaveReqDto dto) {
 		
 		User principal = (User) session.getAttribute("principal");
 
-		boardService.댓글등록(boardId, dto, principal);
+		if(principal == null) {
+			throw new MyAsyncNotFoundException("인증이 되지 않았습니다.");
+		}
+		
+		commentService.댓글등록(boardId, dto, principal);
 		
 		return "redirect:/board/" + boardId;
 	}

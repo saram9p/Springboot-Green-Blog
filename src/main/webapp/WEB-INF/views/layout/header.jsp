@@ -17,7 +17,13 @@
   
 </head>
 <body>
-
+	<script>
+		// id만 적을 수 있다(개인정보는 적으면 안됨)
+		// 자바스크립트로 변형이 불가능
+		// 자바스크립트로 유효성 검사를 완벽하게 할 수 있는 방법은 없다
+		let globalUserId = "${sessionScope.principal.id}";
+	</script>
+	
 	<!-- 네브바 시작 -->
 	<nav class="navbar navbar-expand-md bg-dark navbar-dark">
 		<a class="navbar-brand" href="/">블로그</a>

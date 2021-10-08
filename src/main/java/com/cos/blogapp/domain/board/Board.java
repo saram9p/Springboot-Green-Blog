@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import com.cos.blogapp.domain.comment.Comment;
 import com.cos.blogapp.domain.user.User;
@@ -45,13 +46,6 @@ public class Board {
 	@JsonIgnoreProperties({"board"}) // comments 객체 내부의 필드를 제외시키는 법
 	// @JsonIgnore comments 자체를 제외시킨다.
 	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+	@OrderBy("id desc")
 	private List<Comment> comments;
-
-	@Override
-	public String toString() {
-		return "Board [id=" + id + ", title=" + title + ", content=" + content + ", user=" + user + ", comments="
-				+ comments + "]";
-	}
-	
-	
 }
