@@ -25,9 +25,9 @@ public class GlobalExceptionHandler {
 	}
 	
 	@ExceptionHandler(value = MyAsyncNotFoundException.class)
-	public @ResponseBody CMRespDto error2(MyNotFoundException e) {  // 의존성 주입
+	public @ResponseBody CMRespDto<String> error2(MyNotFoundException e) {  // 의존성 주입
 		System.out.println("오류 터졌어: " + e.getMessage());
-		return new CMRespDto(-1, e.getMessage(), null);
+		return new CMRespDto<String>(-1, e.getMessage(), null);
 	}
 	
 }

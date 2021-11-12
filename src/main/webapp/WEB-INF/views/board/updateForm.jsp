@@ -31,7 +31,7 @@
 		// JSON.parse(제이슨 문자열) => 리턴 자바스크립트 함수
 		
 		// 같은 도메인이면 자바스크립트를 다 허용한다 // 내서버는 localhost 생략가능, await 이유 응답을 기다리려고
-		let response = await fetch("http://localhost:8080/board/" + id, {
+		let response = await fetch("http://localhost:8080/api/board/" + id, {
 			method: "put",
 			body: JSON.stringify(boardUpdateDto),
 			headers: {

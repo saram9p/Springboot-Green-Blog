@@ -13,7 +13,7 @@
 	<script>
 			async function deleteById(id) {
 				// 1. 비동기 함수 호출 -> 비동기를 잘처리하는 방법??????
-				let response = await fetch("http://localhost:8080/board/" + id, {
+				let response = await fetch("http://localhost:8080/api/board/" + id, {
 					method: "delete"
 				}); // HTTP 요청할 때 쓰는 함수, 약속 - 어음
 				// await로 어음을 기다렸다 받는다, 동기화되는데 async로 사용하면 비동기가 된다
@@ -55,7 +55,7 @@
 
 	<div class="card">
 		<!-- 댓글 쓰기 시작 -->
-		<form action="/board/${boardEntity.id }/comment" method="post" >
+		<form action="/api/board/${boardEntity.id }/comment" method="post" >
 			<div class="card-body">
 				<textarea id="ta-content" name="content" class="form-control" rows="1" ></textarea>
 			</div>
@@ -88,15 +88,15 @@
 					<div>${comment.content}</div>
 					<div class="d-flex">
 						<div class="font-italic">작성자 : ${comment.user.username } &nbsp;</div>
-						<button class="badge" id="reply-${comment.id}" onclick="deleteById(${comment.id})">삭제</button>
+						<button class="badge" id="reply-${comment.id}" onclick="deleteCommentById(${comment.id})">삭제</button>
 					</div>
 				</li>
 			</c:forEach>
 		</ul>
 		
 		<script>
-			async function deleteById(commentId) {
-				let response = await fetch("http://localhost:8080/comment/" + commentId, { // I/O가 일어나면
+			async function deleteCommentById(commentId) {
+				let response = await fetch("http://localhost:8080/api/comment/" + commentId, { // I/O가 일어나면
 					method:"delete"
 				});
 				

@@ -16,9 +16,7 @@ import javax.persistence.OrderBy;
 
 import com.cos.blogapp.domain.comment.Comment;
 import com.cos.blogapp.domain.user.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

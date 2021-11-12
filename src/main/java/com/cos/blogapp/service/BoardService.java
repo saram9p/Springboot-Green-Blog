@@ -9,13 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cos.blogapp.domain.board.Board;
 import com.cos.blogapp.domain.board.BoardRepository;
-import com.cos.blogapp.domain.comment.Comment;
-import com.cos.blogapp.domain.comment.CommentRepository;
 import com.cos.blogapp.domain.user.User;
 import com.cos.blogapp.handler.ex.MyAsyncNotFoundException;
 import com.cos.blogapp.handler.ex.MyNotFoundException;
 import com.cos.blogapp.web.dto.BoardSaveReqDto;
-import com.cos.blogapp.web.dto.CommentSaveReqDto;
 
 import lombok.RequiredArgsConstructor;
 

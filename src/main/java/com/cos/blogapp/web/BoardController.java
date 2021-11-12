@@ -39,14 +39,10 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	private final CommentService commentService;
 	private final HttpSession session;
 	
-	@PostMapping("/board/{boardId}/comment") // 2개가 섞여 있으면 명시적으로 적는다 : id -> boardId, 보드의 몇번의 댓글 작성, 주소때문에 어쩔 수 없이 board를 들고 옴
+	@PostMapping("/api/board/{boardId}/comment") // 2개가 섞여 있으면 명시적으로 적는다 : id -> boardId, 보드의 몇번의 댓글 작성, 주소때문에 어쩔 수 없이 board를 들고 옴
 	public String commentSave(@PathVariable int boardId, CommentSaveReqDto dto) {
 		
 		User principal = (User) session.getAttribute("principal");
-
-		if(principal == null) {
-			throw new MyAsyncNotFoundException("인증이 되지 않았습니다.");
-		}
 		
 		commentService.댓글등록(boardId, dto, principal);
 		
@@ -54,16 +50,13 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	}
 	
 	// 자바스크립트로 요청
-	@PutMapping("/board/{id}")
+	@PutMapping("/api/board/{id}")
 	public @ResponseBody CMRespDto<String> update(@PathVariable int id, @Valid @RequestBody BoardSaveReqDto dto, BindingResult bindingResult) { // 제네릭에 ?를 넣으면 리턴 시에 타입이 결정됨, @RequestBody는 버퍼로 있는 그대로 받는다, 파싱할 수 있다.
 		
 		// dto 바로 옆에 BindingResult가 있어야한다
 		
 		// 인증
 		User principal = (User) session.getAttribute("principal");
-		if(principal == null) {
-			throw new MyAsyncNotFoundException("인증이 되지 않았습니다.");
-		}
 		
 		// 유효성 검사
 		if(bindingResult.hasErrors()) {
@@ -89,14 +82,10 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 	
 	// API(AJAX) 요청
 	// DELETE FROM board WHERE id = ?, html body가 없다
-	@DeleteMapping("/board/{id}")
+	@DeleteMapping("/api/board/{id}")
 	public @ResponseBody CMRespDto<String> deleteByid(@PathVariable int id) { // 오브젝트로 받으면 json(같은 문자열)으로 리턴한다
 		User principal = (User) session.getAttribute("principal");
-		// AOP 처리 가능
-		// 인증이 된 사람만 함수 접근 가능!! (로그인 된 사람)
-		if (principal == null) {
-			throw new MyAsyncNotFoundException("인증이 되지 않았습니다.");
-		}
+
 		boardService.게시글삭제(id, principal);
 		return new CMRespDto<String>(1, "성공", null); // @ResponseBody 데이터 리턴!! String = text/plain
 	}
@@ -118,7 +107,7 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 		return "board/detail"; // ViewResolver
 	}
 	
-	@PostMapping("/board")
+	@PostMapping("/api/board")
 	public @ResponseBody String save(@Valid BoardSaveReqDto dto, BindingResult bindingResult) {
 		
 		// 공통 로직 시작 ---------------------------------------------
@@ -126,9 +115,6 @@ public class BoardController { // ioc 컨테이너의 BoardController를 메모�
 		
 		// 유효성검사
 		// 인증 체크 (공통로직)
-		if(principal == null) { // 로그인 안됨
-			return Script.href("/loginForm", "잘못된 접근입니다");
-		}
 		
 		if(bindingResult.hasErrors()) {
 			Map<String, String> errorMap = new HashMap<>();

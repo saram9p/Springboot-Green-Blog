@@ -46,7 +46,7 @@
 						<li class="nav-item"><a class="nav-link" href="/board/saveForm">글쓰기</a>
 						</li>
 		
-						<li class="nav-item"><a class="nav-link" href="/user/${sessionScope.principal.id}">회원정보</a>
+						<li class="nav-item"><a class="nav-link" href="/api/user/${sessionScope.principal.id}">회원정보</a>
 						</li>
 						
 						<li class="nav-item"><a class="nav-link" href="/logout">로그아웃</a>

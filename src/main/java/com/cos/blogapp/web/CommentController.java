@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cos.blogapp.domain.user.User;
-import com.cos.blogapp.handler.ex.MyAsyncNotFoundException;
 import com.cos.blogapp.service.CommentService;
 import com.cos.blogapp.web.dto.CMRespDto;
 
@@ -21,13 +20,10 @@ public class CommentController {
 	private final CommentService commentService;
 	private final HttpSession session;
 	
-	@DeleteMapping("/comment/{id}")
+	@DeleteMapping("/api/comment/{id}")
 	public @ResponseBody CMRespDto<?> deleteById(@PathVariable int id) { // ? : 타입 추론, 자바스크립트는 ?로 통일
 		
 		User principal = (User) session.getAttribute("principal");
-		if(principal == null) {
-			throw new MyAsyncNotFoundException("인증되지 않은 사용자입니다.");
-		}
 		
 		commentService.댓글삭제(id, principal);
 		return new CMRespDto<>(1,"성공",null);
